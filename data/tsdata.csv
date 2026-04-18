@@ -1,0 +1,6 @@
+complaint_id,text,category,priority,sentiment,resolution_time
+COMP-001,The bottle was leaking when it arrived.,Packaging Issue,High,Negative,24
+COMP-002,I love the product but shipping took too long.,Trade Issue,Medium,Neutral,48
+COMP-003,The pills are crushed.,Product Issue,High,Negative,12
+COMP-004,Missing the scoop inside the powder tub.,Packaging Issue,Low,Neutral,72
+COMP-005,The flavor is completely different from my last order.,Product Issue,Medium,Negative,36
