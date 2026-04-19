@@ -1,0 +1,22 @@
+complaint_pattern,solution
+product caused allergic reaction skin rash,Immediately escalate to the Product Safety Team. Request the batch number and manufacturing date. File an adverse event report with the regulatory department.
+product stopped working defective broken not functioning,Initiate a product replacement process. Send a prepaid return label to retrieve the defective unit for lab testing. Log the defect in the product quality tracker.
+product quality poor low standard substandard,Escalate to the Quality Control department for batch review. Request photographic evidence from the customer. Schedule a follow-up within 48 hours.
+product wrong item received incorrect order,Verify order details against warehouse dispatch log. Arrange immediate pickup and correct item re-dispatch. Apply a courtesy discount for the inconvenience.
+product expired expiry date old stale,Pull the affected batch from inventory immediately. Issue a full refund and replacement. Report to the supply chain team for shelf-life audit.
+packaging damaged crushed dented broken box,Dispatch a replacement with reinforced bubble-wrap packaging. File a damage claim with the shipping carrier. Review warehouse packing procedures.
+packaging seal broken leaked leaking open tampered,Check packaging seal integrity logs from the production line. Escalate to the quality control team. Send replacement with tamper-evident packaging.
+packaging label wrong mislabeled incorrect information,Report to the labeling department for immediate correction. Recall affected batch if safety-critical. Issue corrected product to the customer.
+packaging missing items incomplete accessories,Cross-check the packing checklist for the SKU. Ship the missing items via express delivery at no extra cost. Update the packing SOP to prevent recurrence.
+trade dealer distributor not responding support,Contact the regional distribution manager directly. Escalate through the trade partner management portal. Document the communication gap for the quarterly review.
+trade pricing discrepancy overcharged wrong price,Verify pricing against the current trade agreement. Issue a credit note for the overcharged amount. Update the pricing database if a system error is found.
+trade shipping delayed late delivery not received,Contact the logistics carrier for a tracking update. Arrange expedited re-shipment if delivery exceeds SLA. Compensate the trade partner per the delay clause.
+trade cold chain temperature storage conditions,Audit cold-chain storage conditions at the transit warehouse. Request temperature log data from the carrier. Discard any product that breached the safe temperature range.
+supplement vitamin caused nausea stomach upset side effect,Advise the customer to discontinue use and consult a physician. Log the adverse reaction in the pharmacovigilance system. Request a product sample for lab analysis.
+cream lotion ointment skin irritation burning redness,Advise immediate discontinuation and application of cold compress. Collect the product batch details for dermatology review. Offer a hypoallergenic alternative.
+bottle cap loose lid not closing properly,Report to the manufacturing QA team for cap torque testing. Issue replacement units from a verified batch. Update cap-seal specifications if defect rate exceeds 2%.
+smell odor bad foul rancid sour product,Quarantine the reported batch immediately. Conduct stability testing on retained samples. Issue full refund and replacement from a fresh batch.
+refund money back return not satisfied unhappy,Process refund within 3-5 business days per company policy. Offer store credit as an alternative with a 10% bonus. Document the reason for return in the CRM.
+delivery address wrong shipped to incorrect location,Intercept the shipment if still in transit. Arrange re-delivery to the correct address at no charge. Update the customer address in the system.
+customer service rude unhelpful bad experience support staff,Escalate to the Customer Service Manager for agent review. Offer a sincere apology and a goodwill gesture. Schedule agent retraining on empathy and resolution protocols.
+Shipment arrived late and product was damaged,jashdashd

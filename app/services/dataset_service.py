@@ -24,7 +24,7 @@ def load_dataset():
         _dataset_df = pd.read_csv(filepath)
 
         # Replace NaN with None (for JSON compatibility)
-        _dataset_df = _dataset_df.where(pd.notnull(_dataset_df), None)
+        _dataset_df = _dataset_df.astype(object).where(pd.notnull(_dataset_df), None)
 
         # Debug print (you can remove later)
         print("✅ DATA LOADED:", _dataset_df.shape)

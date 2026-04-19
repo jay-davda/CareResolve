@@ -10,7 +10,12 @@ class Settings(BaseSettings):
 
     APP_NAME: str = "CareResolve AI"
     DEBUG: bool = True
-    DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5432/careresolve_db"
+    DATABASE_URL: str = "sqlite:///./wellsense.db"
+
+    # JWT Authentication settings
+    SECRET_KEY: str = "change-me-in-production"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+    ALGORITHM: str = "HS256"
 
     class Config:
         env_file = ".env"
