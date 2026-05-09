@@ -95,7 +95,14 @@ def retrain_models():
     Protected: Operations Manager only.
     """
     return ml_service.retrain_models()
-
+@app.get("/models/accuracy", dependencies=[Depends(requires_role("manager"))])
+def get_model_accuracy():
+    """
+    Returns the current accuracy metrics of the trained models.
+    """
+    from app.services.ml_service import train_models
+    metrics = train_models()
+    return metrics
 
 # ── Bulk Processing ───────────────────────────────────────────────────────────
 

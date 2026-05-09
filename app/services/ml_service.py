@@ -8,7 +8,9 @@ import csv
 
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
+import joblib
 from app.services.dataset_service import load_dataset
+from app.services.generate_mock_data import generate_mock_data
 
 # Global variables to cache our models and vectorizer
 # This ensures we only train them once (lazy loading)
@@ -19,18 +21,43 @@ _is_trained = False
 _solution_bank = None # Cache for RAG
 _solution_vectors = None
 
-def train_models():
+def train_models(force_retrain=False):
     """
     Loads the dataset, trains Logistic Regression models for category and priority
     classification, and stores them in global variables for future predictions.
+    Uses joblib to cache the trained models to disk.
     """
     global _vectorizer, _category_model, _priority_model, _is_trained
     
-    # If already trained, skip to avoid redundant work
-    if _is_trained:
-        return
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    model_dir = os.path.join(BASE_DIR, "models")
+    os.makedirs(model_dir, exist_ok=True)
+    
+    vec_path = os.path.join(model_dir, "vectorizer.joblib")
+    cat_path = os.path.join(model_dir, "category_model.joblib")
+    pri_path = os.path.join(model_dir, "priority_model.joblib")
+    metrics_path = os.path.join(model_dir, "metrics.joblib")
+    
+    # If already trained in memory, and not forcing retrain, return cached metrics
+    if _is_trained and not force_retrain:
+        if os.path.exists(metrics_path):
+            return joblib.load(metrics_path)
+        return {"category_accuracy": 0, "priority_accuracy": 0}
+
+    # Try to load from disk if not forcing retrain
+    if not force_retrain and os.path.exists(vec_path) and os.path.exists(cat_path) and os.path.exists(pri_path):
+        print("Loading pre-trained models from disk...")
+        _vectorizer = joblib.load(vec_path)
+        _category_model = joblib.load(cat_path)
+        _priority_model = joblib.load(pri_path)
+        _is_trained = True
+        _load_solution_bank()
+        print("[OK] Models loaded successfully from disk.")
+        if os.path.exists(metrics_path):
+            return joblib.load(metrics_path)
+        return {"message": "Models loaded from disk."}
         
-    print("Initializing machine learning pipeline...")
+    print("Initializing machine learning pipeline and training models...")
     
     # 1. Get the FULL dataset using the existing dataset service
     df = load_dataset()
@@ -65,8 +92,12 @@ def train_models():
             print(f"Error loading ground_truth_dataset.csv: {e}")
             
     if df is None or df.empty:
-        print("Warning: Dataset could not be loaded or is empty. ML training aborted.")
-        return
+        print("Warning: Dataset could not be loaded or is empty. Generating mock data...")
+        generate_mock_data()
+        df = load_dataset()
+        if df is None or df.empty:
+            print("Failed to generate data. ML training aborted.")
+            return {"error": "Dataset empty"}
         
     # Drop rows that are missing necessary columns to prevent training errors
     df = df.dropna(subset=['text', 'category', 'priority'])
@@ -104,7 +135,7 @@ def train_models():
     
     cat_preds = _category_model.predict(X_test_cat)
     cat_acc = accuracy_score(y_test_cat, cat_preds)
-    print(f"✅ Category Model Accuracy (Tested on {X_test_cat.shape[0]} rows): {cat_acc:.2%}")
+    print(f"[OK] Category Model Accuracy (Tested on {X_test_cat.shape[0]} rows): {cat_acc:.2%}")
 
     # 4. Train Priority Model
     X_train_pri, X_test_pri, y_train_pri, y_test_pri = train_test_split(
@@ -116,14 +147,27 @@ def train_models():
     
     pri_preds = _priority_model.predict(X_test_pri)
     pri_acc = accuracy_score(y_test_pri, pri_preds)
-    print(f"✅ Priority Model Accuracy (Tested on {X_test_pri.shape[0]} rows): {pri_acc:.2%}")
+    print(f"[OK] Priority Model Accuracy (Tested on {X_test_pri.shape[0]} rows): {pri_acc:.2%}")
+    
+    # Save models to disk
+    joblib.dump(_vectorizer, vec_path)
+    joblib.dump(_category_model, cat_path)
+    joblib.dump(_priority_model, pri_path)
+    
+    metrics = {
+        "category_accuracy": round(cat_acc * 100, 2),
+        "priority_accuracy": round(pri_acc * 100, 2),
+        "total_trained_rows": num_rows
+    }
+    joblib.dump(metrics, metrics_path)
     
     _is_trained = True
     
     # Sync RAG vectors with the new vectorizer to avoid dimensionality mismatch
     _load_solution_bank()
     
-    print("🚀 Models successfully trained and cached in memory!")
+    print("[DONE] Models successfully trained and cached in memory and on disk!")
+    return metrics
 
 # Keywords that identify non-complaint noise inputs.
 # Add more patterns here as needed.
@@ -148,8 +192,8 @@ def is_noise(text: str) -> bool:
     for pattern in _NOISE_PATTERNS:
         if text_lower.startswith(pattern) or text_lower == pattern:
             return True
-    # Very short texts are likely noise (less than 4 words)
-    if len(text_lower.split()) < 4:
+    # We no longer filter by word count because short phrases like "watch is damaged" are valid complaints.
+    if len(text_lower.split()) == 0:
         return True
     return False
 
@@ -196,7 +240,7 @@ def _load_solution_bank():
             # Ensure we have a vectorizer (either from train_models or initial load)
             if _vectorizer is not None:
                 _solution_vectors = _vectorizer.transform(_solution_bank['complaint_pattern'])
-                print(f"✅ RAG Knowledge Base loaded: {len(_solution_bank)} solutions.")
+                print(f"[OK] RAG Knowledge Base loaded: {len(_solution_bank)} solutions.")
             else:
                 # If no vectorizer yet, we can't vectorize solutions. 
                 # They will be vectorized during the first train_models() call.
@@ -361,9 +405,9 @@ def retrain_models():
     _is_trained = False
     
     print("Starting retraining process...")
-    train_models()
+    metrics = train_models(force_retrain=True)
     
-    return {"message": "Models retrained successfully"}
+    return {"message": "Models retrained successfully", "metrics": metrics}
 
 def cluster_complaints(texts: list[str]) -> list[dict]:
     """

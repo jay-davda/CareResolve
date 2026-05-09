@@ -329,7 +329,7 @@ export default function SupportDashboard() {
 
   return (
     <>
-      <div className="app-container" style={{ maxWidth: '1200px', flexDirection: 'column', gap: '2rem', padding: '2rem' }}>
+      <div className="app-container" style={{ flexDirection: 'column', gap: '2rem', padding: '2rem' }}>
       
       <div className="card" style={{ width: '100%', padding: '0' }}>
         {/* Header Section */}
@@ -530,7 +530,7 @@ export default function SupportDashboard() {
                     <span style={{ padding: '0.5rem 1rem', background: 'var(--success-bg)', color: 'var(--success-color)', borderRadius: '10px', fontWeight: '700', fontSize: '0.85rem' }}>{bulkResults.count} Items Processed</span>
                     <span style={{ padding: '0.5rem 1rem', background: 'var(--card-bg)', color: 'var(--text-muted)', borderRadius: '10px', fontWeight: '700', fontSize: '0.85rem' }}>Time: {bulkResults.processing_time_seconds}s</span>
                   </div>
-                  <div style={{ overflowX: 'auto', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
+                  <div className="table-wrapper">
                     <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                       <thead style={{ background: 'var(--card-bg)' }}>
                         <tr>
@@ -557,7 +557,7 @@ export default function SupportDashboard() {
 
           {activeTab === 'manage' && (
             <div className="fade-in">
-              <div style={{ overflowX: 'auto' }}>
+              <div className="table-wrapper">
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                   <thead>
                     <tr style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>

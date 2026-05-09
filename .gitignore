@@ -1,5 +1,6 @@
 # Environment
 .env
+.env.local
 
 # Python
 __pycache__/
@@ -10,9 +11,25 @@ build/
 venv/
 .venv/
 
+# ML / Cache
+*.joblib
+.pytest_cache/
+
+# Database
+*.db
+*.sqlite3
+
 # Node
 node_modules/
+npm-debug.log*
+
+# Vite
+dist/
 
 # IDE
 .vscode/
 .idea/
+
+# OS Files
+.DS_Store
+Thumbs.db

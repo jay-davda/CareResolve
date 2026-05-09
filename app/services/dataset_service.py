@@ -27,16 +27,16 @@ def load_dataset():
         _dataset_df = _dataset_df.astype(object).where(pd.notnull(_dataset_df), None)
 
         # Debug print (you can remove later)
-        print("✅ DATA LOADED:", _dataset_df.shape)
+        print("DATA LOADED:", _dataset_df.shape)
 
         return _dataset_df
 
     except FileNotFoundError:
-        print(f"❌ Dataset file not found at: {filepath}")
+        print(f"Dataset file not found at: {filepath}")
         return pd.DataFrame()
 
     except Exception as e:
-        print(f"❌ Error loading dataset: {e}")
+        print(f"Error loading dataset: {e}")
         return pd.DataFrame()
 
 

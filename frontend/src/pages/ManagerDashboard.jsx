@@ -7,21 +7,24 @@ export default function ManagerDashboard() {
   const [dashboard, setDashboard] = useState(null);
   const [sla, setSla] = useState(null);
   const [complaints, setComplaints] = useState([]);
+  const [metrics, setMetrics] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // Fetch real data from backend
   const fetchData = async () => {
     const headers = { Authorization: `Bearer ${token}` };
     try {
-      const [dRes, sRes, cRes] = await Promise.all([
+      const [dRes, sRes, cRes, mRes] = await Promise.all([
         fetch('http://localhost:8000/manager/dashboard', { headers }),
         fetch('http://localhost:8000/manager/sla', { headers }),
         fetch('http://localhost:8000/complaints/', { headers }),
+        fetch('http://localhost:8000/models/accuracy', { headers }),
       ]);
       setDashboard(await dRes.json());
       setSla(await sRes.json());
       const cData = await cRes.json();
       setComplaints(Array.isArray(cData) ? cData.sort((a, b) => b.id - a.id) : []);
+      setMetrics(await mRes.json());
     } catch (err) {
       console.error('Failed to fetch manager data:', err);
     } finally {
@@ -93,7 +96,7 @@ export default function ManagerDashboard() {
   if (loading) return <div className="app-container"><div className="card"><p>Accessing Operations Oversight...</p></div></div>;
 
   return (
-    <div className="app-container" style={{ maxWidth: '1200px', flexDirection: 'column', gap: '2rem', padding: '2rem' }}>
+    <div className="app-container" style={{ flexDirection: 'column', gap: '2rem', padding: '2rem' }}>
       
       <div className="card" style={{ width: '100%', padding: '0' }}>
         {/* Header */}
@@ -191,7 +194,7 @@ export default function ManagerDashboard() {
               </span>
             </div>
 
-            <div style={{ overflowX: 'auto', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
+            <div className="table-wrapper">
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                 <thead>
                   <tr style={{ color: 'var(--text-muted)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', background: 'var(--card-bg)' }}>
@@ -260,22 +263,51 @@ export default function ManagerDashboard() {
           </div>
 
           {/* ── AI Governance (Retrain Button) ──────────────────────── */}
-          <div style={{ padding: '2rem', background: 'linear-gradient(135deg, #1e293b, #334155)', borderRadius: '24px', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.25rem' }}>AI Governance & Continuous Retraining</h3>
-              <p style={{ margin: 0, opacity: 0.8, fontSize: '0.9rem' }}>Trigger a full model update using all recent human-QA ground truth corrections.</p>
+          <div style={{ padding: '2rem', background: 'linear-gradient(135deg, #1e293b, #334155)', borderRadius: '24px', color: 'white', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div>
+                <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.25rem' }}>AI Governance & Continuous Retraining</h3>
+                <p style={{ margin: 0, opacity: 0.8, fontSize: '0.9rem' }}>Trigger a full model update using all recent human-QA ground truth corrections.</p>
+              </div>
+              <button 
+                onClick={async () => {
+                  if(window.confirm("Retrain AI models with latest QA corrections?")) {
+                    try {
+                      const res = await fetch('http://localhost:8000/retrain', { method: 'POST', headers: { Authorization: `Bearer ${token}` }});
+                      if (res.ok) {
+                        const data = await res.json();
+                        setMetrics(data.metrics);
+                        alert("Models successfully retrained!");
+                      } else {
+                        alert("Retrain failed.");
+                      }
+                    } catch (e) {
+                      alert("Error triggering retrain.");
+                    }
+                  }
+                }}
+                style={{ padding: '1rem 2rem', background: 'var(--primary)', color: 'white', border: 'none', borderRadius: '16px', fontWeight: '800', cursor: 'pointer', boxShadow: '0 10px 15px -3px rgba(139,92,246,0.3)', whiteSpace: 'nowrap' }}
+              >
+                🔄 Trigger Retrain
+              </button>
             </div>
-            <button 
-              onClick={() => {
-                if(window.confirm("Retrain AI models with latest QA corrections?")) {
-                  fetch('http://localhost:8000/retrain', { method: 'POST', headers: { Authorization: `Bearer ${token}` }})
-                  .then(r => r.ok ? alert("Models successfully retrained!") : alert("Retrain failed."));
-                }
-              }}
-              style={{ padding: '1rem 2rem', background: 'var(--primary)', color: 'white', border: 'none', borderRadius: '16px', fontWeight: '800', cursor: 'pointer', boxShadow: '0 10px 15px -3px rgba(139,92,246,0.3)', whiteSpace: 'nowrap' }}
-            >
-              🔄 Trigger Retrain
-            </button>
+            
+            {metrics && (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginTop: '1rem' }}>
+                <div style={{ background: 'rgba(255,255,255,0.1)', padding: '1.5rem', borderRadius: '16px' }}>
+                  <div style={{ fontSize: '0.8rem', textTransform: 'uppercase', opacity: 0.8, marginBottom: '0.5rem', fontWeight: 700 }}>Category Model Accuracy</div>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#22c55e' }}>{metrics.category_accuracy}%</div>
+                </div>
+                <div style={{ background: 'rgba(255,255,255,0.1)', padding: '1.5rem', borderRadius: '16px' }}>
+                  <div style={{ fontSize: '0.8rem', textTransform: 'uppercase', opacity: 0.8, marginBottom: '0.5rem', fontWeight: 700 }}>Priority Model Accuracy</div>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#22c55e' }}>{metrics.priority_accuracy}%</div>
+                </div>
+                <div style={{ background: 'rgba(255,255,255,0.1)', padding: '1.5rem', borderRadius: '16px' }}>
+                  <div style={{ fontSize: '0.8rem', textTransform: 'uppercase', opacity: 0.8, marginBottom: '0.5rem', fontWeight: 700 }}>Total Trained Rows</div>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 800 }}>{metrics.total_trained_rows ?? 'N/A'}</div>
+                </div>
+              </div>
+            )}
           </div>
 
         </div>

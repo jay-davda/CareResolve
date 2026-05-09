@@ -156,7 +156,7 @@ export default function QADashboard() {
   if (loading) return <div className="app-container"><div className="card"><p>Syncing with Intelligence Hub...</p></div></div>;
 
   return (
-    <div className="app-container" style={{ maxWidth: '1200px', flexDirection: 'column', gap: '2rem', padding: '2rem' }}>
+    <div className="app-container" style={{ flexDirection: 'column', gap: '2rem', padding: '2rem' }}>
       
       {trends?.alerts && trends.alerts.length > 0 && (
         <div className="card fade-in" style={{ width: '100%', borderLeft: '8px solid var(--danger-color)', backgroundColor: 'var(--danger-bg)', padding: '2rem' }}>
@@ -212,7 +212,7 @@ export default function QADashboard() {
                   <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem' }}>The AI is highly confident in all recent classifications.</p>
                 </div>
               ) : (
-                <div style={{ overflowX: 'auto' }}>
+                <div className="table-wrapper">
                   <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                     <thead>
                       <tr style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
@@ -329,7 +329,7 @@ export default function QADashboard() {
                     <div style={{ padding: '2rem', background: 'var(--danger-bg)', borderRadius: '24px', textAlign: 'center' }}><div style={{ fontSize: '0.8rem', fontWeight: '800' }}>Manual Overrides</div><div style={{ fontSize: '3rem', fontWeight: '900', color: 'var(--danger-color)' }}>{consistency.variance_score.ai_ignored}</div></div>
                     <div style={{ padding: '2rem', background: 'transparent', borderRadius: '24px', textAlign: 'center', border: '1px solid var(--border-color)' }}><div style={{ fontSize: '0.8rem', fontWeight: '800' }}>Variance</div><div style={{ fontSize: '3rem', fontWeight: '900', color: 'var(--text-main)' }}>{consistency.variance_score.variance_percentage}%</div></div>
                   </div>
-                  <div style={{ overflowX: 'auto', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
+                  <div className="table-wrapper">
                     <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
                       <thead style={{ background: 'var(--card-bg)' }}><tr style={{ color: 'var(--text-muted)' }}><th style={{ padding: '1.25rem 1rem' }}>ID</th><th style={{ padding: '1.25rem 1rem' }}>RAG Solution</th><th style={{ padding: '1.25rem 1rem' }}>Human Res.</th><th style={{ padding: '1.25rem 1rem' }}>Source</th><th style={{ padding: '1.25rem 1rem' }}>Alignment</th></tr></thead>
                       <tbody>{consistency.comparison_table.map((row, idx) => (<tr key={idx} style={{ borderBottom: '1px solid var(--border-color)' }}><td style={{ padding: '1.25rem 1rem', fontWeight: '800' }}>#{row.id}</td><td style={{ padding: '1.25rem 1rem' }}>{row.ai_recommended}</td><td style={{ padding: '1.25rem 1rem' }}>{row.executive_action}</td><td style={{ padding: '1.25rem 1rem' }}><span style={badgeStyle(row.resolution_source === 'AI' ? 'var(--success-bg)' : 'var(--warning-bg)', row.resolution_source === 'AI' ? 'var(--success-color)' : 'var(--warning-color)')}>{row.resolution_source || 'Manual'}</span></td><td style={{ padding: '1.25rem 1rem' }}><span style={badgeStyle(row.match ? 'var(--success-bg)' : 'var(--danger-bg)', row.match ? 'var(--success-color)' : 'var(--danger-color)')}>{row.match ? 'Followed' : 'Diverged'}</span></td></tr>))}</tbody>
@@ -342,7 +342,7 @@ export default function QADashboard() {
 
           {activeTab === 'manage' && (
             <div className="fade-in">
-              <div style={{ overflowX: 'auto' }}>
+              <div className="table-wrapper">
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                   <thead>
                     <tr style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>

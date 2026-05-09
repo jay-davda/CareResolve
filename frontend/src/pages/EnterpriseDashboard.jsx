@@ -158,7 +158,7 @@ export default function EnterpriseDashboard() {
         </div>
       </header>
 
-      <main style={{ flex: 1, padding: '0 2.5rem 5rem', maxWidth: '1200px', width: '100%', margin: '0 auto' }}>
+      <main style={{ flex: 1, padding: '0 2.5rem 5rem', width: '100%', margin: '0 auto' }}>
         
         <div className="nav-tabs">
           <button className={`nav-tab ${activeTab === 'analyze' ? 'active' : ''}`} onClick={() => setActiveTab('analyze')}>🎯 Analyze</button>
